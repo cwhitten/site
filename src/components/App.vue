@@ -1,7 +1,7 @@
 <style>
   h1, h2 {
     font-weight: normal;
-    margin-left: -10px;
+    margin-left: 5px;
   }
   a {
     color: #444;

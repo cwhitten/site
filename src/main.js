@@ -1,69 +1,12 @@
 import Vue from 'vue'
-import App from './components/App'
-
 import VueRouter from 'vue-router'
-import VueResource from 'vue-resource'
 
-Vue.use(VueResource)
 Vue.use(VueRouter)
 
-var router = new VueRouter({
-  routes: [
-    { path: '/' },
-  ]
-})
-
-Vue.component('item', {
-  template: `
-    <li>
-      <div
-        :class='{bold: isFolder}'
-        @click='toggle'>
-          <div v-if='isFolder'>
-            {{ model.name }}
-            <span class='operator' v-if="isFolder">[{{open ? '-' : '+'}}]</span>
-          </div>
-          <div v-else>
-            <a v-if='hasLink' v-bind:href='model.link' target='_blank'>{{ model.name }}</a>
-            <div v-else>
-              {{ model.name }}
-            </div>
-          </div>
-      </div>
-      <ul v-show='open' v-if='isFolder'>
-        <item
-          class='item'
-          v-for='model in model.children'
-          :model='model'>
-        </item>
-      </ul>
-    </li>
-  `,
-  props: {
-    model: Object
-  },
-  data: function () {
-    return {
-      open: false
-    }
-  },
-  computed: {
-    isFolder: function () {
-      return this.model.children &&
-        this.model.children.length
-    },
-    hasLink: function() {
-      return this.model.link
-    }
-  },
-  methods: {
-    toggle: function () {
-      if (this.isFolder) {
-        this.open = !this.open
-      }
-    },
-  }
-})
+import App from './components/App'
+import Home from './components/Home'
+import Item from './components/Item'
+import NotFound from './components/404'
 
 var data = {
   name: 'about me',
@@ -89,10 +32,72 @@ var data = {
   ]
 }
 
-new Vue({
-  el: '#app',
-  router,
-  data: {
-    treeData: data
+// define the item component
+Vue.component('item', {
+  template: `
+    <ul>
+      <li>
+        <div
+          :class='{bold: isFolder}'
+          @click='toggle'>
+            <div v-if='isFolder'>
+              {{ model.name }}
+              <span class='operator' v-if="isFolder">[{{open ? '-' : '+'}}]</span>
+            </div>
+            <div v-else>
+              <a v-if='hasLink' v-bind:href='model.link' target='_blank'>{{ model.name }}</a>
+              <div v-else>
+                {{ model.name }}
+              </div>
+            </div>
+        </div>
+        <ul v-show='open' v-if='isFolder'>
+          <item
+            class='item'
+            v-for='model in model.children'
+            :key='model'
+            :model='model'>
+          </item>
+        </ul>
+      </li>
+  </ul>
+  `,
+  props: {
+    model: Object
+  },
+  data: function () {
+    return {
+      open: false
+    }
+  },
+  computed: {
+    isFolder: function () {
+      return this.model.children &&
+        this.model.children.length
+    },
+    hasLink: function() {
+      return this.model.link
+    }
+  },
+  methods: {
+    toggle: function () {
+      if (this.isFolder) {
+        this.open = !this.open
+      }
+    }
   }
+})
+
+
+const router = new VueRouter({
+  mode: 'history',
+  routes: [
+    { path: '/chris', component: Home, props: { model: data } },
+    { path: '*', component: NotFound },
+  ]
+})
+
+const app = new Vue({
+  el: '#app',
+  router
 })
