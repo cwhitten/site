@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Clipboard from 'clipboard'
 
 Vue.use(VueRouter)
 
@@ -26,13 +27,12 @@ var data = {
     {
       name: 'contact me',
       children: [
-        { name: 'chris@whitten.co' },
+        { name: 'chris@whitten.co', copy: true }
       ]
     }
   ]
 }
 
-// define the item component
 Vue.component('item', {
   template: `
     <ul>
@@ -45,7 +45,13 @@ Vue.component('item', {
               <span class='operator' v-if="isFolder">[{{open ? '-' : '+'}}]</span>
             </div>
             <div v-else>
-              <a v-if='hasLink' v-bind:href='model.link' target='_blank'>{{ model.name }}</a>
+              <a v-if='hasLink' :href='model.link' target='_blank'>{{ model.name }}</a>
+              <div v-else-if='canCopy'
+                class='copyable operator'
+                @click='copy'
+                :data-clipboard-text='realName'>
+                {{ name }}
+              </div>
               <div v-else>
                 {{ model.name }}
               </div>
@@ -62,12 +68,12 @@ Vue.component('item', {
       </li>
   </ul>
   `,
-  props: {
-    model: Object
-  },
+  props: ['model'],
   data: function () {
     return {
-      open: false
+      open: false,
+      realName : this.model.name,
+      name: this.model.name
     }
   },
   computed: {
@@ -77,6 +83,9 @@ Vue.component('item', {
     },
     hasLink: function() {
       return this.model.link
+    },
+    canCopy: function() {
+      return this.model.copy
     }
   },
   methods: {
@@ -84,6 +93,12 @@ Vue.component('item', {
       if (this.isFolder) {
         this.open = !this.open
       }
+    },
+    copy: function () {
+      this.name = 'copied to clipboard!'
+      setTimeout(() => {
+        this.name = this.realName
+      }, 3000)
     }
   }
 })
@@ -97,7 +112,9 @@ const router = new VueRouter({
   ]
 })
 
-const app = new Vue({
+new Vue({
   el: '#app',
   router
 })
+
+new Clipboard('.copyable');
