@@ -10,7 +10,7 @@ import Item from './components/Item'
 import NotFound from './components/404'
 
 var data = {
-  name: 'about you',
+  name: 'about me',
   children: [
     { name: 'i build software' },
     { name: 'i live in the pacific northwest' },
