@@ -11,6 +11,13 @@ import NotFound from './components/404'
 
 var data = {
   name: 'about me',
+  meta: {
+    img: {
+      src: 'https://pbs.twimg.com/profile_images/839920761359908864/Vyp4Hsjn.jpg',
+      height: 200,
+      width: 200
+    }
+  },
   children: [
     { name: 'i build software' },
     { name: 'i live in the pacific northwest' },
@@ -58,6 +65,9 @@ Vue.component('item', {
             </div>
         </div>
         <ul v-show='open' v-if='isFolder'>
+          <div v-if='hasImg'>
+            <img :src='model.meta.img.src' :height='model.meta.img.height' :width='model.meta.img.width'></img>
+          </div>
           <item
             class='item'
             v-for='model in model.children'
@@ -84,6 +94,9 @@ Vue.component('item', {
     hasLink: function() {
       return this.model.link
     },
+    hasImg: function() {
+      return this.model.meta && this.model.meta.img
+    },
     canCopy: function() {
       return this.model.copy
     }
@@ -98,7 +111,7 @@ Vue.component('item', {
       this.name = 'copied to clipboard!'
       setTimeout(() => {
         this.name = this.realName
-      }, 3000)
+      }, 1500)
     }
   }
 })
